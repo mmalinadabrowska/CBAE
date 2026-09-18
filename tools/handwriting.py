@@ -497,10 +497,9 @@ def wobble_line(x1, y1, x2, y2, seed=11, wobble=0.5, steps=8):
 def pencil_pill(x, y, w, h, seed=41):
     """The pill as a pencil draws it.
 
-    Nothing here is one closed line. Each lap is broken into a few segments
-    with gaps between them, sits a little off the lap before it, and carries
-    its own tremor; a slow wave shared by all of them pulls the shape itself
-    out of true. Returns (path, stroke-width, opacity) triples, lightest last.
+    One line, not a closed one: it is broken into fragments with gaps between
+    them, each carrying its own tremor, over a shape that a slow wave pulls out
+    of true. Returns (path, stroke-width, opacity) triples.
     """
     r = h / 2
     straight = max(w - h, 1.0)
@@ -545,21 +544,13 @@ def pencil_pill(x, y, w, h, seed=41):
         return _catmull(pts)
 
     out = []
-    # the lap that carries the shape, in four segments with gaps between them
-    marks = [(0.010, 0.300), (0.325, 0.235), (0.575, 0.205), (0.800, 0.185)]
+    # one line round the shape, broken into fragments: each is drawn once, at
+    # one weight, so nothing doubles back over anything else
+    marks = [(0.012, 0.222), (0.252, 0.176), (0.448, 0.202),
+             (0.668, 0.142), (0.828, 0.152)]
     for i, (start_t, span) in enumerate(marks):
         out.append((stroke(perim * start_t, perim * span, 0.0, 0.8,
-                           seed + 3 + i * 7), 1.7, 0.92))
-    # a second, lighter pass that only catches part of the way round
-    for i, (start_t, span, bias) in enumerate(
-            [(0.055, 0.215, -2.0), (0.380, 0.185, 2.1), (0.690, 0.170, -1.9)]):
-        out.append((stroke(perim * start_t, perim * span, bias, 1.0,
-                           seed + 40 + i * 11), 1.15, 0.6))
-    # short flicks: the pencil going round again for a couple of centimetres
-    for i, (start_t, span, bias) in enumerate(
-            [(0.140, 0.055, 1.8), (0.470, 0.050, -2.2), (0.880, 0.045, 2.0)]):
-        out.append((stroke(perim * start_t, perim * span, bias, 1.2,
-                           seed + 80 + i * 13), 0.95, 0.5))
+                           seed + 3 + i * 7), 1.9, 0.95))
     return out
 
 
