@@ -1,0 +1,18 @@
+LetHerGo
+PERMISSIONS ET CONDITIONS :
+
+La permission est ici accordée, sans contrepartie, à toute personne ayant obtenu une copie de la ‘fonte informatique’ de l’utiliser, l’étudier, la copier, la fusionner, l’inclure, la modifier, la redistribuer et la vendre, modifiée ou non, aux conditions suivantes :
+
+    La ‘fonte informatique’, en tout ou partie, en version originale ou modifiée, ne peut être vendue par elle même.
+    Les versions originales ou modifiées de la ‘fonte informatique’ peuvent être liées, redistribuées et/ou vendues avec n’importe quel logiciel, à condition que chaque copie contienne la déclaration de copyright ci-dessus ainsi que cette licence.
+    Ces pièces peuvent être soit des fichiers textes autonomes, des entêtes de fichiers accessibles à une lecteur..ice humain..e, ou figurer dans des méta-données accessibles par programme, dans des fichiers textes ou binaires, tant que leur texte est facilement accessible à un..e utilisateueur..ice.
+    Aucune version modifiée de la ‘fonte informatique’ ne peut utiliser les noms réservés sans autorisation écrite expresse du..dela propriétaire du copyright. Cette restriction ne s’applique qu’au nom principal de la police tel que présenté à l’utilisateur..ice.
+    Le ou les noms un..e titulaire du copyright et ceux du ou des auteur..ices ne peuvent pas être utilisés pour promouvoir, conseiller ou faire de la publicité pour des versions modifiées, sauf pour rappeler leur(s) contribution(s), ou alors avec leur autorisation écrite expresse.
+    La ‘fonte informatique’, modifiée ou non, en tout ou partie, doit être distribuée avec exactement cette même licence. Cette obligation de conserver la licence ne s’applique pas aux documents crées en utilisant la ‘fonte informatique’.
+
+FIN DE CONTRAT :
+
+Cette licence devient nulle et sans objet si l’une quelconque des conditions ci dessus n’est pas remplie.
+CLAUSE DE NON RESPONSABILITÉ :
+
+La fonte informatique est fournie telle quelle, sans garantie d’aucune sorte, ni implicite ni explicite, y compris et de manière non limitative sans garantie de commerciabilité, de conformité à une utilisation particulière, de respect des copyrights, brevets, marques commerciales ou autres droits. En aucun cas la..e titulaire du copyright ne pourra être tenu pour responsable en cas de réclamation, dommage ou autre conséquence, y compris aucun dommage général, spécifique, indirect, incident ou résultant, que ce soit contractuellement, à titre de dédommagement ou autrement, survenant suite à l’usage ou l’impossibilité d’usage de la fonte informatique, ou toute autre affaire impliquant la fonte informatique.
