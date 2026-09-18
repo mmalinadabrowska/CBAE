@@ -23,137 +23,152 @@ SVG_DIR = ROOT / "assets" / "svg"
 X_HEIGHT = 10.0
 SLANT_DEG = 9.0          # forward slope of the hand
 LETTER_SPACING = 1.6
-WORD_SPACING = 6.0
+JOIN_SPACING = 1.5     # the ligature between joined-up letters
+WORD_SPACING = 9.0
 
 # --- the alphabet -----------------------------------------------------------
 # name: (advance width, [subpath, ...]). Absolute M/L/C/Z commands only.
 
+# Lowercase is joined-up: every letter is one stroke that starts on the
+# baseline at (0, 0) and leaves it again at (width, 0), so letters in a word
+# run into each other the way a fast hand writes them. A few marks — the
+# apostrophe, the question mark, the dot on the i, the cross on the t — are
+# drawn with the pen lifted and listed after the joining stroke.
+
+DETACHED = set("'?.,")
+
+# letters whose stroke ends up at x-height; the join then swings back down
+EXIT_Y = {"o": -6.2, "v": -7.6, "w": -7.6, "b": -5.2}
+
 GLYPHS = {
-    "a": (10.0, [
-        "M 7.4,-9.4 C 5.6,-10.6 2.6,-10.4 1.2,-8.2 C -0.2,-6 0.2,-2.4 2,-1 C 3.6,0.3 6,-0.4 7.2,-2.6",
-        "M 7.6,-9.8 C 7.2,-6.4 7,-3.2 7.2,-1.4 C 7.3,-0.3 8.2,0.4 9.4,-0.8",
+    "a": (9.2, [
+        "M 0,0 C 1.2,-2.4 2.8,-6.2 4.4,-8.0 C 5.4,-9.0 6.6,-8.6 6.9,-7.0 C 7.2,-5.4 6.6,-2.8 5.4,-1.4 C 4.2,-0.1 2.6,-0.5 2.1,-2.0 C 1.7,-3.4 2.4,-5.2 3.6,-6.2 C 4.6,-7.0 5.8,-7.2 6.6,-6.6 C 6.6,-4.6 6.4,-2.4 6.5,-1.2 C 6.6,-0.4 7.0,-0.1 7.7,-0.3 C 8.4,-0.5 8.9,-0.9 9.2,-1.3"
     ]),
-    "b": (9.8, [
-        "M 1.0,-21 C 2.4,-15 1.8,-8 1.6,-4 C 1.5,-2 1.6,-0.8 2.0,-0.3",
-        "M 1.6,-6.8 C 3.2,-9.4 6.2,-10.0 7.6,-8.2 C 9.0,-6.4 8.4,-2.8 6.4,-1.3 "
-        "C 4.8,-0.1 3.0,-0.4 2.0,-1.8",
-        "M 7.4,-3.4 C 7.8,-2.0 8.4,-1.2 9.4,-1.6",
+    "b": (9.0, [
+        "M 0,0 C 1.2,-5 2.6,-12 3.6,-17 C 4.1,-19.4 4.5,-20.8 4.7,-21 C 4.3,-17 3.4,-11 2.8,-6.4 C 2.4,-3.6 2.2,-1.6 2.5,-1.0 C 3.0,-0.2 4.2,-0.2 5.4,-1.0 C 6.8,-1.9 7.8,-3.6 7.6,-5.2 C 7.4,-6.6 6.2,-7.2 4.8,-6.6 C 3.8,-6.2 3.0,-5.2 2.6,-4.0 C 3.6,-4.8 5.4,-5.5 7.0,-5.5 C 7.9,-5.5 8.6,-5.4 9.0,-5.2"
     ]),
-    "c": (8.4, [
-        "M 7.6,-8.0 C 6.2,-10.4 2.4,-10.8 1.0,-8.0 C -0.3,-5.2 0.1,-2.0 2.0,-0.7 "
-        "C 4.0,0.7 6.4,0.1 7.9,-1.7",
+    "c": (7.6, [
+        "M 0,0 C 1.2,-2.4 2.8,-6.2 4.4,-8.0 C 5.4,-9.0 6.6,-8.6 7.0,-7.2 C 6.6,-8.0 5.6,-8.0 4.6,-7.2 C 3.2,-6.0 2.2,-3.6 2.4,-2.2 C 2.6,-0.9 3.8,-0.5 5.2,-0.8 C 6.2,-1.0 7.0,-1.4 7.6,-1.8"
     ]),
-    "d": (10.8, [
-        "M 7.6,-8.2 C 6.4,-10.3 3.0,-10.7 1.4,-8.5 C -0.2,-6.3 0.0,-2.7 1.8,-1.1 "
-        "C 3.4,0.3 6.0,-0.3 7.2,-2.5",
-        "M 8.0,-20.6 C 7.6,-14 7.2,-7 7.4,-3 C 7.5,-1.2 8.0,0.2 9.2,-0.7 "
-        "C 9.8,-1.1 10.2,-1.6 10.5,-2.3",
+    "d": (9.4, [
+        "M 0,0 C 1.2,-2.4 2.8,-6.2 4.4,-8.0 C 5.4,-9.0 6.6,-8.6 6.9,-7.0 C 7.2,-5.4 6.6,-2.8 5.4,-1.4 C 4.2,-0.1 2.6,-0.5 2.1,-2.0 C 1.7,-3.4 2.4,-5.2 3.6,-6.2 C 4.6,-7.0 5.8,-7.2 6.6,-6.6 C 7.0,-10.4 7.6,-15.6 8.0,-18.4 C 8.2,-20.0 8.4,-20.8 8.4,-21.0 C 7.8,-16.6 7.2,-9.8 7.1,-5.0 C 7.1,-2.4 7.2,-1.0 7.6,-0.6 C 8.1,-0.1 8.8,-0.4 9.4,-1.0"
     ]),
-    "e": (8.8, [
-        "M 0.6,-4.6 C 2.8,-5.0 5.4,-6.0 6.8,-7.2 C 7.9,-8.2 7.2,-9.9 5.4,-9.9 "
-        "C 3.0,-9.9 0.6,-7.6 0.4,-4.6 C 0.2,-1.7 2.0,0.4 4.4,0.0 "
-        "C 6.2,-0.3 7.5,-1.4 8.3,-2.7",
+    "e": (7.6, [
+        "M 0,0 C 1.6,-1.6 3.6,-4.0 5.0,-5.8 C 5.8,-6.9 5.6,-8.0 4.4,-8.0 "
+        "C 2.8,-8.0 1.2,-6.0 1.1,-3.8 C 1.0,-1.8 2.2,-0.6 3.8,-0.7 "
+        "C 5.2,-0.8 6.6,-1.4 7.6,-0.4",
     ]),
-    "f": (8.0, [
-        "M 6.6,-20.4 C 4.6,-21.2 3.0,-20.0 2.8,-17.4 C 2.5,-13.0 2.6,-5.0 2.2,-0.6 "
-        "C 1.9,3.0 1.2,5.4 -0.2,6.4",
-        "M 0.2,-9.6 C 2.2,-10.4 4.8,-10.5 6.6,-10.0",
+    "f": (7.4, [
+        "M 0,0 C 0.8,-3.4 1.8,-8.2 2.8,-12.8 C 3.6,-16.6 4.6,-20.2 5.6,-20.8 "
+        "C 6.2,-21.2 6.4,-20.0 5.8,-17.4 C 5.0,-13.4 3.8,-7.6 3.0,-2.6 "
+        "C 2.4,1.4 1.6,4.6 0.6,5.8 C -0.2,6.8 -0.9,6.0 -0.7,4.6 "
+        "C -0.5,3.0 1.0,1.4 3.0,0.4 C 4.6,-0.4 6.2,-0.6 7.4,-0.4",
     ]),
-    "g": (10.0, [
-        "M 7.2,-9.4 C 5.4,-10.6 2.4,-10.4 1.0,-8.2 C -0.4,-6 0.0,-2.4 1.8,-1 "
-        "C 3.4,0.3 5.8,-0.4 7.0,-2.6",
-        "M 7.4,-9.8 C 7.0,-6 6.6,-2 6.4,1.6 C 6.2,4.6 5.0,6.6 3.0,6.8 "
-        "C 1.7,6.9 0.8,6.1 0.8,5.0",
+    "g": (9.0, [
+        "M 0,0 C 1.2,-2.4 2.8,-6.2 4.4,-8.0 C 5.4,-9.0 6.6,-8.6 6.9,-7.0 C 7.2,-5.4 6.6,-2.8 5.4,-1.4 C 4.2,-0.1 2.6,-0.5 2.1,-2.0 C 1.7,-3.4 2.4,-5.2 3.6,-6.2 C 4.6,-7.0 5.8,-7.2 6.6,-6.6 C 6.4,-3.4 5.8,0.8 5.0,3.6 C 4.2,6.2 3.0,7.0 2.0,6.4 C 1.2,5.9 1.0,4.8 1.8,3.8 C 2.8,2.5 5.0,1.5 7.0,0.9 C 8.0,0.6 8.6,0.35 9.0,0.0"
     ]),
-    "h": (10.2, [
-        "M 0.8,-21 C 2.2,-15.5 1.6,-9 1.4,-0.3",
-        "M 1.4,-6.6 C 2.6,-9.4 5.0,-10.4 6.6,-9.2 C 7.8,-8.3 7.8,-5.4 7.6,-3.2 "
-        "C 7.5,-1.6 7.4,-0.7 7.8,-0.3 C 8.5,0.3 9.4,-0.6 10.0,-1.7",
+    "h": (9.2, [
+        "M 0,0 C 0.8,-4.0 2.0,-10.0 2.8,-14.6 C 3.3,-17.8 3.8,-20.4 4.1,-21 "
+        "C 3.8,-17 3.0,-10.6 2.4,-6.0 C 2.1,-3.4 1.9,-1.4 2.0,-0.6 "
+        "C 2.6,-3.6 3.6,-6.4 4.8,-7.6 C 5.8,-8.6 6.8,-8.2 7.0,-6.6 "
+        "C 7.2,-5.0 6.8,-2.8 6.8,-1.6 C 6.8,-0.6 7.2,-0.2 7.8,-0.3 "
+        "C 8.4,-0.4 8.8,-0.8 9.2,-1.4",
     ]),
-    "i": (5.6, [
-        "M 1.2,-9.6 C 1.4,-6.4 1.2,-3.2 1.4,-1.6 C 1.5,-0.4 2.4,0.3 3.6,-0.8",
-        "M 1.8,-13.8 C 2.3,-14.0 2.8,-13.9 3.0,-13.4",
+    "i": (5.0, [
+        "M 0,0 C 1.0,-2.0 2.0,-4.8 2.8,-6.8 C 3.2,-7.8 3.4,-8.3 3.4,-8.2 "
+        "C 3.0,-6.0 2.6,-3.2 2.6,-1.6 C 2.6,-0.6 3.0,-0.2 3.6,-0.3 "
+        "C 4.2,-0.4 4.7,-0.9 5.0,-1.4",
+        "M 3.3,-11.8 C 3.7,-12.1 4.2,-11.9 4.1,-11.3",
     ]),
-    "j": (6.0, [
-        "M 2.2,-9.8 C 2.4,-5.4 2.2,-0.6 1.8,2.6 C 1.4,5.6 0.4,6.9 -1.2,6.6",
-        "M 2.6,-13.8 C 3.1,-14.0 3.6,-13.9 3.8,-13.4",
+    "j": (5.4, [
+        "M 0,0 C 1.0,-2.0 2.2,-4.8 3.0,-6.8 C 3.4,-7.8 3.6,-8.3 3.6,-8.2 "
+        "C 3.2,-5.4 2.8,-1.6 2.4,1.6 C 2.0,4.6 1.2,6.4 0.0,6.6 "
+        "C -0.9,6.7 -1.6,6.0 -1.6,5.0",
+        "M 3.5,-11.8 C 3.9,-12.1 4.4,-11.9 4.3,-11.3",
     ]),
-    "k": (9.6, [
-        "M 1.0,-21 C 2.4,-15.5 1.8,-9 1.6,-0.3",
-        "M 7.6,-9.6 C 5.6,-7.6 3.4,-6.0 1.8,-5.2",
-        "M 3.4,-6.2 C 5.0,-4.6 6.8,-2.2 8.2,-0.4",
+    "k": (8.6, [
+        "M 0,0 C 0.8,-4.0 2.0,-10.0 2.8,-14.6 C 3.3,-17.8 3.8,-20.4 4.1,-21 "
+        "C 3.8,-17 3.0,-10.6 2.4,-6.0 C 2.1,-3.4 1.9,-1.2 2.0,-0.4 "
+        "C 3.4,-2.4 5.4,-4.8 6.8,-6.6 C 5.6,-5.2 4.2,-3.8 3.4,-3.2 "
+        "C 4.4,-3.0 5.6,-2.2 6.4,-1.4 C 7.0,-0.8 7.8,-0.6 8.6,-1.2",
     ]),
     "l": (6.2, [
-        "M 1.2,-21 C 2.6,-15.5 2.2,-9 2.2,-4 C 2.2,-1.7 2.6,0.4 4.0,-0.4 "
-        "C 4.8,-0.9 5.4,-1.5 5.8,-2.2",
+        "M 0,0 C 0.8,-4.0 2.0,-10.0 2.8,-14.6 C 3.3,-17.8 3.8,-20.4 4.1,-21 "
+        "C 3.8,-17 3.0,-10.6 2.6,-6.0 C 2.3,-3.2 2.2,-1.4 2.6,-0.8 "
+        "C 3.1,-0.1 4.0,-0.3 4.7,-0.8 C 5.3,-1.2 5.8,-1.8 6.2,-2.4",
     ]),
-    "m": (14.4, [
-        "M 0.4,-9.6 C 0.6,-6 0.6,-3 0.6,-0.3",
-        "M 0.6,-7.6 C 1.6,-9.6 3.6,-10.4 5.0,-9.4 C 6.0,-8.6 6.2,-5.6 6.0,-0.5",
-        "M 6.0,-7.4 C 7.0,-9.4 9.0,-10.2 10.4,-9.2 C 11.4,-8.4 11.6,-5.6 11.4,-3.2 "
-        "C 11.3,-1.6 11.3,-0.7 11.7,-0.3 C 12.4,0.3 13.3,-0.6 13.9,-1.7",
+    "m": (12.8, [
+        "M 0,0 C 0.6,-2.6 1.4,-5.4 2.0,-7.0 C 2.4,-8.0 2.6,-8.5 2.6,-8.2 "
+        "C 2.2,-6.0 1.8,-3.2 1.8,-1.0 C 2.4,-3.6 3.4,-6.4 4.4,-7.4 "
+        "C 5.2,-8.2 6.0,-7.8 6.0,-6.4 C 6.0,-5.0 5.6,-3.0 5.6,-1.2 "
+        "C 6.2,-3.6 7.2,-6.4 8.2,-7.4 C 9.0,-8.2 9.8,-7.8 9.8,-6.4 "
+        "C 9.8,-5.0 9.4,-2.8 9.4,-1.6 C 9.4,-0.6 9.8,-0.2 10.5,-0.3 "
+        "C 11.3,-0.4 12.1,-1.0 12.8,-1.8",
     ]),
-    "n": (10.0, [
-        "M 0.4,-9.6 C 0.6,-6 0.6,-3 0.6,-0.3",
-        "M 0.6,-7.6 C 1.8,-9.8 4.2,-10.6 5.8,-9.4 C 7.0,-8.5 7.2,-5.8 7.0,-3.4 "
-        "C 6.9,-1.8 6.9,-0.7 7.3,-0.3 C 8.0,0.3 8.9,-0.6 9.5,-1.7",
+    "n": (9.6, [
+        "M 0,0 C 0.6,-2.6 1.4,-5.4 2.0,-7.0 C 2.4,-8.0 2.6,-8.5 2.6,-8.2 "
+        "C 2.2,-6.0 1.8,-3.2 1.8,-1.0 C 2.4,-3.6 3.6,-6.4 4.8,-7.4 "
+        "C 5.7,-8.2 6.6,-7.8 6.6,-6.4 C 6.6,-5.0 6.2,-2.8 6.2,-1.6 "
+        "C 6.2,-0.6 6.6,-0.2 7.3,-0.3 C 8.1,-0.4 8.9,-1.0 9.6,-1.8",
     ]),
-    "o": (9.4, [
-        "M 4.8,-10.0 C 1.9,-10.0 0.0,-7.2 0.4,-4.2 C 0.8,-1.4 3.0,0.5 5.4,-0.1 "
-        "C 7.8,-0.7 9.2,-3.4 8.7,-6.2 C 8.3,-8.5 6.8,-10.0 4.8,-10.0 Z",
+    "o": (7.8, [
+        "M 0,0 C 1.2,-2.4 2.8,-6.2 4.4,-8.0 C 5.4,-9.0 6.6,-8.6 7.0,-7.0 C 7.5,-5.0 6.8,-2.4 5.4,-1.2 C 4.0,-0.1 2.4,-0.6 1.9,-2.2 C 1.5,-3.6 2.1,-5.4 3.2,-6.4 C 4.0,-7.1 4.8,-7.4 5.6,-7.2 C 6.4,-7.0 7.2,-6.6 7.8,-6.2"
     ]),
-    "p": (9.8, [
-        "M 1.0,-9.8 C 0.8,-5.0 0.4,-0.2 0.0,3.0 C -0.2,4.8 -0.4,6.0 -0.4,6.8",
-        "M 0.8,-6.8 C 2.4,-9.4 5.4,-10.0 6.8,-8.2 C 8.2,-6.4 7.6,-2.8 5.6,-1.3 "
-        "C 4.0,-0.1 2.0,-0.4 1.0,-1.8",
-        "M 6.6,-3.4 C 7.0,-2.0 7.8,-1.2 8.8,-1.6",
+    "p": (9.0, [
+        "M 0,0 C 0.8,-2.6 1.8,-5.6 2.6,-7.2 C 3.0,-8.0 3.2,-8.5 3.2,-8.2 "
+        "C 2.6,-4.4 1.8,0.6 1.2,3.6 C 0.8,5.4 0.4,6.4 0.2,6.8 "
+        "C 0.8,3.4 1.6,-0.6 2.4,-3.4 C 3.2,-6.2 4.6,-7.8 5.8,-7.6 "
+        "C 7.0,-7.4 7.6,-5.8 7.0,-4.0 C 6.4,-2.2 4.8,-1.0 3.4,-1.4 "
+        "C 4.8,-1.2 6.4,-1.8 7.4,-2.6 C 7.6,-1.8 8.0,-1.0 9.0,-0.6",
     ]),
-    "r": (7.2, [
-        "M 0.6,-9.6 C 0.8,-6.4 0.8,-3.0 0.9,-0.4",
-        "M 0.8,-6.6 C 1.8,-8.9 3.6,-10.2 5.2,-9.7 C 6.2,-9.4 6.6,-8.4 6.4,-7.5",
-        "M 0.9,-0.4 C 1.9,0.3 3.2,-0.2 4.2,-1.4",
+    "r": (7.6, [
+        "M 0,0 C 1.0,-3.0 2.2,-6.4 2.9,-8.0 C 3.1,-8.6 3.3,-8.9 3.3,-8.4 C 3.2,-7.8 3.1,-7.2 3.0,-6.8 C 3.9,-7.6 5.0,-8.0 5.9,-7.6 C 6.5,-7.3 6.6,-6.6 6.4,-5.8 C 6.1,-4.2 5.8,-2.4 5.8,-1.4 C 5.8,-0.6 6.1,-0.3 6.6,-0.4 C 7.1,-0.5 7.4,-0.9 7.6,-1.3"
     ]),
-    "s": (7.6, [
-        "M 6.8,-8.8 C 5.8,-10.2 3.0,-10.6 1.6,-9.4 C 0.4,-8.4 0.8,-6.8 2.4,-6.0 "
-        "C 4.0,-5.2 6.2,-4.8 6.6,-3.4 C 7.0,-1.8 5.2,-0.2 3.2,-0.2 "
-        "C 1.8,-0.2 0.8,-0.8 0.2,-1.8",
+    "s": (6.2, [
+        "M 0,0 C 1.4,-1.4 2.8,-3.4 3.6,-5.2 C 4.2,-6.6 4.4,-7.8 3.8,-8.0 "
+        "C 3.0,-8.3 1.8,-7.2 1.6,-5.6 C 1.4,-4.0 2.2,-2.8 3.2,-2.0 "
+        "C 4.0,-1.4 4.4,-0.8 4.2,-0.4 C 4.0,0.0 3.2,0.1 2.6,-0.3 "
+        "C 3.6,-0.1 5.2,-0.5 6.2,-1.0",
     ]),
-    "t": (7.8, [
-        "M 3.0,-16.4 C 3.4,-11 2.6,-6 2.8,-2.6 C 2.9,-0.9 3.6,0.3 5.0,-0.5 "
-        "C 5.8,-1.0 6.4,-1.6 6.9,-2.3",
-        "M 0.2,-9.4 C 2.0,-10.2 4.4,-10.4 6.2,-9.8",
+    "t": (6.6, [
+        "M 0,0 C 0.8,-3.0 2.0,-7.6 2.8,-11.2 C 3.3,-13.4 3.7,-15.2 3.9,-15.8 "
+        "C 3.6,-12.6 3.0,-8.0 2.6,-4.6 C 2.3,-2.4 2.2,-1.0 2.6,-0.6 "
+        "C 3.1,0.0 4.0,-0.2 4.8,-0.8 C 5.5,-1.3 6.1,-1.9 6.6,-2.4",
+        "M 0.8,-8.2 C 2.2,-8.8 4.2,-9.0 5.4,-8.5",
     ]),
-    "u": (10.0, [
-        "M 0.6,-9.8 C 0.1,-7 -0.3,-4 0.6,-1.8 C 1.5,0.4 4.0,0.5 5.6,-1.4 "
-        "C 6.8,-2.9 7.4,-6.4 7.8,-9.9",
-        "M 7.8,-9.9 C 7.2,-6 6.9,-2.6 7.2,-1.0 C 7.4,0.1 8.6,0.5 9.6,-0.8",
+    "u": (8.8, [
+        "M 0,0 C 0.8,-2.6 1.6,-5.4 2.2,-7.2 C 2.6,-8.2 2.8,-8.7 2.8,-8.4 "
+        "C 2.4,-6.2 1.8,-3.6 1.8,-2.0 C 1.8,-0.8 2.4,-0.4 3.2,-0.8 "
+        "C 4.2,-1.3 5.2,-3.4 6.0,-5.6 C 6.4,-6.8 6.8,-7.8 7.0,-8.4 "
+        "C 6.6,-6.0 6.2,-3.2 6.2,-1.6 C 6.2,-0.6 6.6,-0.2 7.3,-0.3 "
+        "C 8.0,-0.4 8.5,-1.0 8.8,-1.6",
     ]),
-    "v": (9.4, [
-        "M 0.4,-9.8 C 1.4,-6.0 3.0,-2.2 4.4,-0.2 C 6.0,-3.6 7.4,-7.4 8.2,-10.1",
-        "M 8.2,-10.1 C 7.8,-6.6 7.9,-3.0 8.4,-1.6 C 8.8,-0.6 9.6,-0.8 10.0,-1.8",
+    "v": (10.2, [
+        "M 0,0 C 1.6,-3.6 3.0,-7.2 4.0,-10.2 C 4.6,-7.0 5.2,-3.4 5.8,-0.3 C 6.8,-3.6 8.0,-7.2 8.8,-10.2 C 9.6,-9.2 9.0,-7.4 7.8,-7.2 C 8.6,-6.8 9.6,-7.0 10.2,-7.6"
     ]),
-    "w": (13.4, [
-        "M 0.4,-9.8 C 1.2,-6.2 2.6,-2.4 3.8,-0.4 C 4.8,-3.0 5.8,-6.4 6.4,-9.2",
-        "M 6.4,-9.2 C 6.8,-6.0 7.6,-2.4 8.8,-0.4 C 10.0,-3.2 11.2,-7.0 11.8,-10.0",
-        "M 11.8,-10.0 C 11.4,-6.6 11.5,-3.0 12.0,-1.6 C 12.4,-0.6 13.0,-0.8 13.4,-1.8",
+    "w": (14.5, [
+        "M 0,0 C 1.6,-3.6 3.0,-7.2 4.0,-10.2 C 4.5,-7.0 5.1,-3.4 5.7,-0.4 C 6.6,-3.4 7.6,-6.6 8.4,-9.4 C 8.9,-6.4 9.5,-3.2 10.1,-0.4 C 11.1,-3.6 12.3,-7.2 13.1,-10.2 C 13.9,-9.2 13.3,-7.4 12.1,-7.2 C 12.9,-6.8 13.9,-7.0 14.5,-7.6"
     ]),
-    "y": (9.8, [
-        "M 0.4,-9.8 C 1.2,-6.4 2.6,-2.8 4.0,-0.8 C 5.6,-4.0 7.0,-7.2 7.8,-10.0",
-        "M 7.8,-10.0 C 7.2,-5.0 6.4,-0.2 5.4,3.2 C 4.4,6.4 3.0,7.2 1.4,6.6",
+    "y": (9.0, [
+        "M 0,0 C 0.8,-2.6 1.8,-5.6 2.6,-7.2 C 3.0,-8.0 3.2,-8.5 3.2,-8.2 "
+        "C 3.0,-6.0 3.0,-3.2 3.6,-1.6 C 4.0,-0.6 4.8,-0.8 5.6,-2.2 "
+        "C 6.4,-3.6 7.0,-6.0 7.4,-8.4 C 6.8,-4.4 6.0,0.4 5.2,3.4 "
+        "C 4.4,6.2 3.2,7.2 2.0,6.6 C 1.2,6.2 1.0,5.2 1.6,4.2 "
+        "C 2.4,2.8 4.4,1.6 6.4,0.9 C 7.4,0.55 8.4,0.3 9.0,0.0",
     ]),
-    "'": (3.4, [
-        "M 1.6,-16.6 C 2.0,-15.0 1.8,-13.8 1.0,-12.8",
+    "'": (3.0, [
+        "M 1.4,-15.0 C 1.9,-13.4 1.7,-12.0 1.0,-11.0",
     ]),
-    "?": (8.0, [
-        "M 0.8,-13.8 C 1.4,-16.2 4.2,-17.2 6.0,-16.0 C 7.9,-14.7 7.4,-12.0 5.8,-10.4 "
-        "C 4.6,-9.2 4.0,-7.8 4.0,-6.4",
-        "M 3.6,-3.4 C 3.8,-2.8 3.8,-2.4 3.7,-2.0",
+    "?": (7.2, [
+        "M 0.6,-11.8 C 1.2,-14.4 3.8,-15.6 5.4,-14.4 C 7.1,-13.1 6.4,-10.6 4.8,-9.0 "
+        "C 3.8,-8.0 3.2,-6.8 3.2,-5.2",
+        "M 2.9,-2.8 C 3.1,-2.3 3.1,-2.0 3.0,-1.6",
     ]),
-    ".": (4.0, [
-        "M 1.4,-1.0 C 1.9,-1.2 2.4,-1.0 2.4,-0.4",
+    ".": (3.4, [
+        "M 1.2,-0.9 C 1.7,-1.1 2.2,-0.9 2.2,-0.3",
     ]),
-    ",": (4.0, [
-        "M 1.6,-0.8 C 2.0,0.4 1.8,1.6 1.0,2.6",
+    ",": (3.4, [
+        "M 1.4,-0.7 C 1.8,0.5 1.6,1.7 0.8,2.7",
     ]),
     # --- capitals (cap height -15) ---
     "A": (12.4, [
@@ -375,32 +390,71 @@ def glyph_paths(char, seed, jitter=0.16, bounce=0.0, tilt=0.0, size=1.0):
     return result, width * size
 
 
-def write(text, x=0.0, y=0.0, seed=1, tracking=LETTER_SPACING, size=1.0,
-          jitter=0.16, bounce=0.5, slant=SLANT_DEG):
-    """Lay out a line of handwriting. Returns (path strings, pen end x)."""
+def _drift(x, seed=0, amount=0.9, wavelength=46.0):
+    """A slow wander of the baseline. Continuous in x, so joins stay closed."""
+    phase = (seed % 17) * 0.37
+    return (math.sin(x / wavelength + phase) * amount
+            + math.sin(x / (wavelength * 0.37) + phase * 2.1) * amount * 0.35)
+
+
+def write(text, x=0.0, y=0.0, seed=1, tracking=None, size=1.0, jitter=0.16,
+          bounce=0.5, slant=SLANT_DEG, connected=True, drift=0.9):
+    """Lay out a line of handwriting. Returns (path strings, pen end x).
+
+    Joined up, letters abut so the strokes run into each other and the whole
+    line rides a drifting baseline. Set connected=False for print capitals,
+    which get their own spacing, tilt and bounce instead.
+    """
+    if tracking is None:
+        tracking = JOIN_SPACING if connected else LETTER_SPACING
     paths = []
     pen = x
+    joinable = None
     tan = math.tan(math.radians(slant))
     for i, char in enumerate(text):
         if char == " ":
             pen += WORD_SPACING * size
+            joinable = None
             continue
         rnd = _rng(seed * 97 + i * 31)
-        dy = rnd() * bounce
-        tilt = math.radians(rnd() * 1.6)
+        if connected:
+            dy, tilt, scale = 0.0, 0.0, size
+        else:
+            dy = rnd() * bounce
+            tilt = math.radians(rnd() * 1.8)
+            scale = size * (1 + rnd() * 0.09)
         subpaths, advance = glyph_paths(char, seed * 131 + i * 17, jitter=jitter,
-                                        bounce=dy, tilt=tilt, size=size)
+                                        bounce=dy, tilt=tilt, size=scale)
+        def place(pts):
+            out = []
+            for px, py in pts:
+                gx = px + pen
+                wave = _drift(gx, seed, drift * size) if connected else 0.0
+                out.append((gx + (-py) * tan, py + y + wave))
+            return out
+
+        if connected and joinable and char not in DETACHED:
+            # swing down from the last letter's high exit into this one
+            ex, ey = joinable
+            entry = place([(0.0, 0.0)])[0]
+            dip = 0.5 if ey > -1 else 1.4
+            paths.append(_emit([("M", [(ex, ey)]),
+                                ("C", [(ex + 1.2, ey + dip),
+                                       (entry[0] - 1.6, entry[1] - dip * 0.4),
+                                       entry])]))
         for sp in subpaths:
-            parts = _points(sp)
-            shifted = []
-            for cmd, pts in parts:
-                shifted.append((cmd, [(px + pen + (-py) * tan, py + y) for px, py in pts]))
-            paths.append(_emit(shifted))
+            parts = [(cmd, place(pts)) for cmd, pts in _points(sp)]
+            paths.append(_emit(parts))
+        exit_y = EXIT_Y.get(char, 0.0) * scale
+        joinable = (place([(advance, exit_y)])[0]
+                    if connected and char not in DETACHED else None)
         pen += advance + tracking * size
     return paths, pen - tracking * size
 
 
-def measure(text, tracking=LETTER_SPACING, size=1.0):
+def measure(text, tracking=None, size=1.0, connected=True):
+    if tracking is None:
+        tracking = JOIN_SPACING if connected else LETTER_SPACING
     pen = 0.0
     for char in text:
         if char == " ":
@@ -498,37 +552,23 @@ def paths_to_body(paths, indent="  ", extra=""):
 
 def mark_title():
     text = "couldn't have been an email"
-    paths, end = write(text, x=4, y=0, seed=3, size=1.0, jitter=0.2, bounce=0.6)
-    w = end + 8
-    return svg(f"0 -24 {w:.0f} 34", paths_to_body(paths), "mark mark--title",
-               "couldn't have been an email", stroke=2.1)
+    paths, end = write(text, x=5, y=0, seed=3, size=1.12, jitter=0.22, drift=1.0)
+    return svg(f"0 -27 {end + 9:.0f} 38", paths_to_body(paths), "mark mark--title",
+               "couldn't have been an email", stroke=1.7)
 
 
 def mark_join():
-    """JOIN THE ~~DISCUSSION~~ CONVERSATION, marked up as on the sketch."""
-    body = []
-    first, end1 = write("JOIN THE", x=16, y=0, seed=21, size=0.86, tracking=2.0,
-                        jitter=0.18, bounce=0.5)
-    struck, end2 = write("DISCUSSION", x=end1 + 13, y=0, seed=22, size=0.8,
-                         tracking=1.7, jitter=0.18, bounce=0.5)
-    above, end3 = write("CONVERSATION", x=end1 + 11, y=-14.5, seed=23, size=0.74,
-                        tracking=1.5, jitter=0.2, bounce=0.5)
-    body += [f'  <path d="{p}"/>' for p in first]
-    body += [f'  <path class="mark__struck" d="{p}"/>' for p in struck]
-    body += [f'  <path d="{p}"/>' for p in above]
-    # struck through, with the caret that pushes the new word in above it
-    body.append('  <path class="mark__strike" d="%s"/>' %
-                wobble_line(end1 + 10, -5.4, end2 + 2.5, -6.6, seed=31, wobble=0.6))
-    body.append('  <path class="mark__caret" d="%s"/>' %
-                wobble_line(end1 + 2.5, -0.8, end1 + 6.0, -8.6, seed=33, wobble=0.4))
-    body.append('  <path class="mark__caret" d="%s"/>' %
-                wobble_line(end1 + 6.0, -8.6, end1 + 9.5, -1.2, seed=34, wobble=0.4))
-    right = max(end2, end3) + 20
-    top, bottom = -30.0, 7.0
+    """JOIN THE CONVERSATION, ringed by a hand-drawn pill."""
+    caps, end = write("JOIN THE CONVERSATION", x=16, y=0, seed=21, size=0.84,
+                      tracking=2.1, jitter=0.34, bounce=1.3, slant=12,
+                      connected=False)
+    body = [f'  <path d="{p}"/>' for p in caps]
+    right = end + 17
+    top, bottom = -20.0, 6.5
     body.insert(0, '  <path class="mark__pill" d="%s"/>' %
                 wobble_pill(2.5, top, right - 5, bottom - top, seed=41, wobble=1.0))
-    return svg(f"0 -34 {right + 2:.0f} 44", "\n".join(body), "mark mark--join",
-               "Join the conversation", stroke=1.7)
+    return svg(f"0 -23 {right + 2:.0f} 33", "\n".join(body), "mark mark--join",
+               "Join the conversation", stroke=1.45)
 
 
 def mark_mail():
@@ -537,36 +577,36 @@ def mark_mail():
     l1, l2 = "get our", "mail"
     w1, w2 = measure(l1, size=size), measure(l2, size=size)
     inner = max(w1, w2)
-    rx = inner / 2 + 11
+    rx = inner / 2 + 12
     cx = rx + 3
-    paths, _ = write(l1, x=cx - w1 / 2, y=0, seed=51, size=size, tracking=1.2,
-                     jitter=0.18, bounce=0.45)
-    more, _ = write(l2, x=cx - w2 / 2, y=13.5, seed=52, size=size, tracking=1.2,
-                    jitter=0.18, bounce=0.45)
-    ring = wobble_ellipse(cx, 5.0, rx, 19.0, seed=61, wobble=0.8)
+    paths, _ = write(l1, x=cx - w1 / 2, y=0, seed=51, size=size, jitter=0.2,
+                     drift=0.7)
+    more, _ = write(l2, x=cx - w2 / 2, y=13.5, seed=52, size=size, jitter=0.2,
+                    drift=0.7)
+    ring = wobble_ellipse(cx, 4.4, rx, 18.5, seed=61, wobble=0.8)
     body = ['  <path class="mark__ring" d="%s"/>' % ring]
     body += [f'  <path d="{p}"/>' for p in paths + more]
-    return svg(f"0 -16 {cx + rx + 3:.0f} 44", "\n".join(body), "mark mark--mail",
-               "get our mail", stroke=1.5)
+    return svg(f"0 -16 {cx + rx + 3:.0f} 42", "\n".join(body), "mark mark--mail",
+               "get our mail", stroke=1.15)
 
 
 def mark_who():
     text = "who are we?"
-    paths, end = write(text, x=4, y=0, seed=71, size=0.9, jitter=0.18, bounce=0.5)
+    paths, end = write(text, x=4, y=0, seed=71, size=1.0, jitter=0.22, drift=0.8)
     body = [f'  <path d="{p}"/>' for p in paths]
     body.append('  <path class="mark__rule" d="%s"/>' %
-                wobble_line(2, 4.2, end + 2, 3.6, seed=73, wobble=0.55))
+                wobble_line(2, 4.4, end + 2, 3.8, seed=73, wobble=0.55))
     body.append('  <path class="mark__rule" d="%s"/>' %
-                wobble_line(3, 6.6, end + 1, 6.0, seed=74, wobble=0.55))
-    return svg(f"0 -22 {end + 8:.0f} 32", "\n".join(body), "mark mark--who",
-               "who are we?", stroke=1.7)
+                wobble_line(3, 6.8, end + 1, 6.2, seed=74, wobble=0.55))
+    return svg(f"0 -25 {end + 8:.0f} 35", "\n".join(body), "mark mark--who",
+               "who are we?", stroke=1.35)
 
 
 def mark_manifesto():
-    paths, end = write("manifesto", x=4, y=0, seed=101, size=0.95, jitter=0.18,
-                       bounce=0.5)
-    return svg(f"0 -24 {end + 8:.0f} 34", paths_to_body(paths), "mark mark--heading",
-               "manifesto", stroke=1.9)
+    paths, end = write("manifesto", x=4, y=0, seed=101, size=1.05, jitter=0.22,
+                       drift=0.8)
+    return svg(f"0 -26 {end + 8:.0f} 36", paths_to_body(paths), "mark mark--heading",
+               "manifesto", stroke=1.45)
 
 
 def mark_close():
