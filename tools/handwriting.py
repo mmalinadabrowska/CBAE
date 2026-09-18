@@ -494,31 +494,73 @@ def wobble_line(x1, y1, x2, y2, seed=11, wobble=0.5, steps=8):
     return _catmull(pts)
 
 
-def wobble_pill(x, y, w, h, seed=5, wobble=1.2):
-    """A hand-drawn pill: a rounded rectangle looped round in one stroke."""
-    rnd = _rng(seed)
+def pencil_pill(x, y, w, h, seed=41):
+    """The pill as a pencil draws it.
+
+    Nothing here is one closed line. Each lap is broken into a few segments
+    with gaps between them, sits a little off the lap before it, and carries
+    its own tremor; a slow wave shared by all of them pulls the shape itself
+    out of true. Returns (path, stroke-width, opacity) triples, lightest last.
+    """
     r = h / 2
-    pts = []
-    steps = 44
-    for i in range(steps + 1):
-        t = i / steps
-        # walk the perimeter: top edge, right cap, bottom edge, left cap
-        straight = max(w - h, 1.0)
-        perim = 2 * straight + 2 * math.pi * r
-        d = t * (perim + straight * 0.035)  # the small overlap where the pen closes
-        d = d % perim
+    straight = max(w - h, 1.0)
+    perim = 2 * straight + 2 * math.pi * r
+
+    def base(d):
+        """Point and outward normal at arclength d round a true pill."""
+        d %= perim
         if d < straight:
-            px, py = x + r + d, y
-        elif d < straight + math.pi * r:
+            return x + r + d, y, 0.0, -1.0
+        if d < straight + math.pi * r:
             a = (d - straight) / r - math.pi / 2
-            px, py = x + r + straight + math.cos(a) * r, y + r + math.sin(a) * r
-        elif d < 2 * straight + math.pi * r:
-            px, py = x + r + straight - (d - straight - math.pi * r), y + h
-        else:
-            a = (d - 2 * straight - math.pi * r) / r + math.pi / 2
-            px, py = x + r + math.cos(a) * r, y + r + math.sin(a) * r
-        pts.append((px + rnd() * wobble * 0.5, py + rnd() * wobble * 0.5))
-    return _catmull(pts)
+            nx, ny = math.cos(a), math.sin(a)
+            return x + r + straight + nx * r, y + r + ny * r, nx, ny
+        if d < 2 * straight + math.pi * r:
+            return x + r + straight - (d - straight - math.pi * r), y + h, 0.0, 1.0
+        a = (d - 2 * straight - math.pi * r) / r + math.pi / 2
+        nx, ny = math.cos(a), math.sin(a)
+        return x + r + nx * r, y + r + ny * r, nx, ny
+
+    warp_rnd = _rng(seed)
+    waves = [(3.4, warp_rnd() * math.pi, 1.0),
+             (2.0, warp_rnd() * math.pi, 2.0),
+             (1.2, warp_rnd() * math.pi, 3.0),
+             (0.7, warp_rnd() * math.pi, 5.0),
+             (0.4, warp_rnd() * math.pi, 8.0)]
+
+    def warp(d):
+        t = d / perim * 2 * math.pi
+        return sum(a * math.sin(t * f + ph) for a, ph, f in waves)
+
+    def stroke(d0, length, bias, jitter, sd):
+        rnd = _rng(sd)
+        steps = max(8, int(length / 3.6))
+        pts = []
+        for k in range(steps + 1):
+            d = d0 + length * k / steps
+            px, py, nx, ny = base(d)
+            lift = min(1.0, k / 2.5, (steps - k) / 2.5) * 0.45 + 0.55
+            off = (warp(d) + bias + rnd() * jitter) * lift
+            pts.append((px + nx * off, py + ny * off))
+        return _catmull(pts)
+
+    out = []
+    # the lap that carries the shape, in four segments with gaps between them
+    marks = [(0.010, 0.300), (0.325, 0.235), (0.575, 0.205), (0.800, 0.185)]
+    for i, (start_t, span) in enumerate(marks):
+        out.append((stroke(perim * start_t, perim * span, 0.0, 0.8,
+                           seed + 3 + i * 7), 1.7, 0.92))
+    # a second, lighter pass that only catches part of the way round
+    for i, (start_t, span, bias) in enumerate(
+            [(0.055, 0.215, -2.0), (0.380, 0.185, 2.1), (0.690, 0.170, -1.9)]):
+        out.append((stroke(perim * start_t, perim * span, bias, 1.0,
+                           seed + 40 + i * 11), 1.15, 0.6))
+    # short flicks: the pencil going round again for a couple of centimetres
+    for i, (start_t, span, bias) in enumerate(
+            [(0.140, 0.055, 1.8), (0.470, 0.050, -2.2), (0.880, 0.045, 2.0)]):
+        out.append((stroke(perim * start_t, perim * span, bias, 1.2,
+                           seed + 80 + i * 13), 0.95, 0.5))
+    return out
 
 
 def _catmull(pts):
@@ -552,17 +594,20 @@ def paths_to_body(paths, indent="  ", extra=""):
 
 
 def mark_pill():
-    """The red marker ring around JOIN THE CONVERSATION.
+    """The red pencil ring around JOIN THE CONVERSATION.
 
     Drawn for a 400x56 box and stretched to whatever the button measures;
-    the stroke stays even because it does not scale with the box.
+    the strokes stay even because they do not scale with the box.
     """
-    d = wobble_pill(5, 5, 390, 46, seed=41, wobble=1.4)
+    body = "\n".join(
+        f'  <path vector-effect="non-scaling-stroke" stroke-width="{wd}" '
+        f'stroke-opacity="{op}" d="{d}"/>'
+        for d, wd, op in pencil_pill(7, 7, 386, 42, seed=41))
     return ('<svg class="shape shape--pill" viewBox="0 0 400 56" fill="none" '
-            'stroke="currentColor" stroke-width="4" stroke-linecap="round" '
+            'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
             'stroke-linejoin="round" preserveAspectRatio="none" '
             'aria-hidden="true" focusable="false">\n'
-            f'  <path vector-effect="non-scaling-stroke" d="{d}"/>\n</svg>')
+            f'{body}\n</svg>')
 
 
 def mark_ring():
