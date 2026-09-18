@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Draws the site's handwriting as vector strokes.
+"""Draws the site's hand-drawn marks as vector strokes.
 
-Every handwritten mark on the site (the title, the buttons, the hand-drawn
-pill and ellipse) is generated from the monoline alphabet below, so the
-lettering stays editable, legible and re-usable inside buttons.
+The marks the site uses today are shapes: the red pill around JOIN THE
+CONVERSATION, the ring around the date and the close cross. The joined-up
+alphabet below is kept because it can set any word as strokes, the way the
+first version of the title did.
 
 Coordinates are in "pen units": the baseline is y = 0, y grows downwards,
 x-height is 10, the ascender reaches -21, the cap height is -15.
@@ -550,63 +551,28 @@ def paths_to_body(paths, indent="  ", extra=""):
     return "\n".join(f'{indent}<path{extra} d="{p}"/>' for p in paths)
 
 
-def mark_title():
-    text = "couldn't have been an email"
-    paths, end = write(text, x=5, y=0, seed=3, size=1.12, jitter=0.22, drift=1.0)
-    return svg(f"0 -27 {end + 9:.0f} 38", paths_to_body(paths), "mark mark--title",
-               "couldn't have been an email", stroke=1.7)
+def mark_pill():
+    """The red marker ring around JOIN THE CONVERSATION.
+
+    Drawn for a 400x56 box and stretched to whatever the button measures;
+    the stroke stays even because it does not scale with the box.
+    """
+    d = wobble_pill(5, 5, 390, 46, seed=41, wobble=1.4)
+    return ('<svg class="shape shape--pill" viewBox="0 0 400 56" fill="none" '
+            'stroke="currentColor" stroke-width="4" stroke-linecap="round" '
+            'stroke-linejoin="round" preserveAspectRatio="none" '
+            'aria-hidden="true" focusable="false">\n'
+            f'  <path vector-effect="non-scaling-stroke" d="{d}"/>\n</svg>')
 
 
-def mark_join():
-    """JOIN THE CONVERSATION, ringed by a hand-drawn pill."""
-    caps, end = write("JOIN THE CONVERSATION", x=16, y=0, seed=21, size=0.84,
-                      tracking=2.1, jitter=0.34, bounce=1.3, slant=12,
-                      connected=False)
-    body = [f'  <path d="{p}"/>' for p in caps]
-    right = end + 17
-    top, bottom = -20.0, 6.5
-    body.insert(0, '  <path class="mark__pill" d="%s"/>' %
-                wobble_pill(2.5, top, right - 5, bottom - top, seed=41, wobble=1.0))
-    return svg(f"0 -23 {right + 2:.0f} 33", "\n".join(body), "mark mark--join",
-               "Join the conversation", stroke=1.45)
-
-
-def mark_mail():
-    """get our / mail, ringed by hand — two lines, as on the sketch."""
-    size = 0.72
-    l1, l2 = "get our", "mail"
-    w1, w2 = measure(l1, size=size), measure(l2, size=size)
-    inner = max(w1, w2)
-    rx = inner / 2 + 12
-    cx = rx + 3
-    paths, _ = write(l1, x=cx - w1 / 2, y=0, seed=51, size=size, jitter=0.2,
-                     drift=0.7)
-    more, _ = write(l2, x=cx - w2 / 2, y=13.5, seed=52, size=size, jitter=0.2,
-                    drift=0.7)
-    ring = wobble_ellipse(cx, 4.4, rx, 18.5, seed=61, wobble=0.8)
-    body = ['  <path class="mark__ring" d="%s"/>' % ring]
-    body += [f'  <path d="{p}"/>' for p in paths + more]
-    return svg(f"0 -16 {cx + rx + 3:.0f} 42", "\n".join(body), "mark mark--mail",
-               "get our mail", stroke=1.15)
-
-
-def mark_who():
-    text = "who are we?"
-    paths, end = write(text, x=4, y=0, seed=71, size=1.0, jitter=0.22, drift=0.8)
-    body = [f'  <path d="{p}"/>' for p in paths]
-    body.append('  <path class="mark__rule" d="%s"/>' %
-                wobble_line(2, 4.4, end + 2, 3.8, seed=73, wobble=0.55))
-    body.append('  <path class="mark__rule" d="%s"/>' %
-                wobble_line(3, 6.8, end + 1, 6.2, seed=74, wobble=0.55))
-    return svg(f"0 -25 {end + 8:.0f} 35", "\n".join(body), "mark mark--who",
-               "who are we?", stroke=1.35)
-
-
-def mark_manifesto():
-    paths, end = write("manifesto", x=4, y=0, seed=101, size=1.05, jitter=0.22,
-                       drift=0.8)
-    return svg(f"0 -26 {end + 8:.0f} 36", paths_to_body(paths), "mark mark--heading",
-               "manifesto", stroke=1.45)
+def mark_ring():
+    """The ring drawn round the date."""
+    d = wobble_ellipse(110, 38, 103, 32, seed=61, wobble=1.1)
+    return ('<svg class="shape shape--ring" viewBox="0 0 220 76" fill="none" '
+            'stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+            'stroke-linejoin="round" preserveAspectRatio="none" '
+            'aria-hidden="true" focusable="false">\n'
+            f'  <path vector-effect="non-scaling-stroke" d="{d}"/>\n</svg>')
 
 
 def mark_close():
@@ -617,12 +583,9 @@ def mark_close():
 
 
 MARKS = {
-    "title": mark_title,
-    "join": mark_join,
-    "mail": mark_mail,
-    "who": mark_who,
+    "pill": mark_pill,
+    "ring": mark_ring,
     "close": mark_close,
-    "manifesto": mark_manifesto,
 }
 
 
