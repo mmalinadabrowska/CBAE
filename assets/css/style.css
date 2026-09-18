@@ -191,7 +191,7 @@ body {
 }
 
 .btn--close:hover,
-.btn--close:focus-visible { transform: rotate(4deg) scale(1.08); }
+.btn--close:focus-visible { transform: scale(1.1); }
 
 .sheet {
   max-width: 44rem;
@@ -310,7 +310,7 @@ body {
 
 .paper {
   z-index: -2;
-  opacity: 0.95;
+  opacity: 0.45;
   background-color: var(--paper);
   background-image: url("../svg/photocopy.svg");
   background-size: cover;
@@ -321,12 +321,12 @@ body {
 .grain {
   z-index: 3;
   mix-blend-mode: multiply;
-  opacity: 0.6;
+  opacity: 0.36;
   background-image: url("../svg/toner.svg");
   background-size: 320px 320px;
 }
 
 @media (max-width: 720px) {
-  .paper { opacity: 0.7; }
-  .grain { opacity: 0.6; }
+  .paper { opacity: 0.38; }
+  .grain { opacity: 0.3; }
 }
